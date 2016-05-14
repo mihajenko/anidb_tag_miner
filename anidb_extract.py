@@ -2,69 +2,55 @@
 
 import json
 import os
-from pprint import PrettyPrinter
+import sys
 
 import bs4
 
 """
-Simple script for extracting AniDB title information from downloaded Season
-Chart HTML pages.
-
-Example URL that you need to download and place into a folder named `htmls/`
-that should be created adjacent to the Python file `anidb.py`:
-
-`https://anidb.net/perl-bin/animedb.pl?show=calendar`
-
-The script loops through HTML files and their HTML elements and extract
-information such as the anime's title, date, ratings, tags.
-
-Output is a JSON file named `extracted_data.json`.
-
-You must have the `BeautifulSoup4` module installed.
+Reffer to README.md for instructions.
 """
 
 __authors__ = ['Miha Jenko']
 
-# for debug use
-pprint = PrettyPrinter(indent=4).pprint
-
 # open file folder
-BASE_DIR = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), 'htmls'
-)
-files = os.listdir(BASE_DIR)
+try:
+    BASE_DIR = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), sys.argv[1]
+    )
+except IndexError:
+    sys.exit('ERROR: HTML folder argument missing')
+
+try:
+    files = os.listdir(BASE_DIR)
+except FileNotFoundError:
+    sys.exit('ERROR: HTML folder does not exist')
 
 # loop through files
 jsdata = {}
 for fn in files:
-    # skip non-html files
-    if 'AniDB.htm' not in fn:
-        continue
-
     # open page
     with open(os.path.join(BASE_DIR, fn), 'rb') as fp:
         page = fp.read()
-        fp.close()
+
+    # HTML scraping
+    soup = bs4.BeautifulSoup(page, 'html.parser')
 
     # extract time information from filename
-    print('File: ', fn)
-    season, year = fn.split(' ')[3:5]
-    year = year.split('_')
+    print('Processing file: ', fn)
+    season, year = soup.select('h1.calendar')[0].text.split(' ')[3:5]
+    year = year.split('/')
     season = season.lower()
-
     try:
         year = year[1]
     except IndexError:
         year = year[0]
+
     try:
         jsdata[year][season] = []
     except KeyError:
         jsdata[year] = {
             season: []
         }
-
-    # HTML scraping
-    soup = bs4.BeautifulSoup(page, 'html.parser')
 
     # loop through anime
     for anime in soup.select('.content .box'):
@@ -110,11 +96,16 @@ for fn in files:
 
         jsdata[year][season].append(anime_data)
 
-    print(year, season, ', nr. of titles: ', len(jsdata[year][season]))
+    print('{0} {1}, number of titles: {2} '.format(
+          year, season, len(jsdata[year][season])))
 
 
 # save
-save_fn = os.path.join(BASE_DIR, '..', 'extracted_data.json')
+try:
+    save_name = sys.argv[2]
+except IndexError:
+    save_name = 'extracted_data.json'
+
+save_fn = os.path.join(BASE_DIR, '..', save_name)
 with open(save_fn, 'w', encoding='utf-8', errors='xmlcharrefreplace') as fp:
     json.dump(jsdata, fp)
-    fp.close()
