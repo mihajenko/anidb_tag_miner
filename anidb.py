@@ -47,15 +47,21 @@ for fn in files:
         fp.close()
 
     # extract time information from filename
-    print(fn)
+    print('File: ', fn)
     season, year = fn.split(' ')[3:5]
     year = year.split('_')
+    season = season.lower()
+
     try:
         year = year[1]
     except IndexError:
         year = year[0]
-    jsdata[year] = {}
-    jsdata[year][season] = []
+    try:
+        jsdata[year][season] = []
+    except KeyError:
+        jsdata[year] = {
+            season: []
+        }
 
     # HTML scraping
     soup = bs4.BeautifulSoup(page, 'html.parser')
@@ -104,14 +110,11 @@ for fn in files:
 
         jsdata[year][season].append(anime_data)
 
+    print(year, season, ', nr. of titles: ', len(jsdata[year][season]))
+
+
 # save
 save_fn = os.path.join(BASE_DIR, '..', 'extracted_data.json')
-with open(save_fn, 'w') as fp:
+with open(save_fn, 'w', encoding='utf-8', errors='xmlcharrefreplace') as fp:
     json.dump(jsdata, fp)
     fp.close()
-
-# print final
-try:
-    pprint(jsdata)
-except UnicodeEncodeError:
-    pass
