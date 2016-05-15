@@ -89,10 +89,8 @@ if __name__ == '__main__':
                         # count another tag
                         tag_n += 1
 
-    # anime-tag count matrix
+    # anime-tag existence matrix
     at = np.zeros((anime_n, tag_n))
-    # compare matrix
-    sim_mat = np.zeros((anime_n, anime_n))
 
     # fill up anime-tag matrix, build a anime reference dict
     anime_dict = {}
@@ -135,7 +133,7 @@ if __name__ == '__main__':
         pickle.dump(tags_dict, fp)
 
     # write to an orange file
-    output_orange_tab_file(anime_dict)
+    # output_orange_tab_file(anime_dict)
 
     # clustering - we got 4 clusters with Orange K-Means different metrics
     ac = KMeans(n_clusters=4, precompute_distances=False, max_iter=600,
@@ -149,10 +147,9 @@ if __name__ == '__main__':
     for idx, cl in enumerate(clabels):
         anime_items[idx] = list(anime_items[idx]) + [cl, ]
 
+    # calculate cluster means
     cluster_means = [[], [], [], [], ]
     cluster_counts = [[], [], [], [], ]
-    # calculate cluster means
-
     for title, idx, cl in anime_items:
         cluster_means[cl].append(mean_dict[idx])
         cluster_counts[cl].append(count_dict[idx])
