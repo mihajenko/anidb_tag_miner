@@ -27,7 +27,7 @@ You must have the `BeautifulSoup4` package installed.
 
 #### stats.py
 
-This script returns a pickled cosine similarity distance matrix from `extracted_data.json`, as well as an anime-tag existence matrix, along with two dicts containing anime and tag index reference numbers for the existence matrix. The returned pickles are named `sim_mat.pkl`, `at.pkl`, `anime_dict.pkl`, `tags_dict.pkl`, respectively.
+This script returns a pickled cosine similarity distance matrix from `extracted_data.json`, as well as an anime-tag existence matrix, along with two dicts containing anime and tag index reference numbers for the existence matrix. The returned pickles are named `sim_mat.pkl`, `at.pkl`, `anime_dict.pkl`, `tags_dict.pkl`, respectively. It also clusters these similarity measures and prints results such as cluster means and most common tags for each cluster.
 
 **Example usage:** `python stats.py extracted_data.json`
 
