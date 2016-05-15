@@ -21,7 +21,7 @@ You can download the HTML files from [here](https://anidb.net/perl-bin/animedb.p
 
 The script opens HTML files placed in the aforementioned folder and loops through their HTML elements. For each anime it extracts information such as the anime's title, date, ratings, tags and places them into a JSON file. You can provide a second argument to the program, or the output file will be saved as `extracted_data.json`.
 
-**Example usage:** `python anidb_extract.py example_folder example.html`
+**Example usage:** `python anidb_extract.py example_folder example.json`
 
 You must have the `BeautifulSoup4` package installed.
 
@@ -31,4 +31,4 @@ This script returns a pickled cosine similarity distance matrix from `extracted_
 
 **Example usage:** `python stats.py extracted_data.json`
 
-Both matrices are in dense `numpy.ndarray` and require the `numpy` package. You will also need `scipy` and `scikit-learn` packages.
+Both matrices are in dense `numpy.ndarray` format and require the `numpy` package. You will also need `scipy` and `scikit-learn` packages.
